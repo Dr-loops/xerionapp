@@ -1,10 +1,14 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert, Modal, TextInput, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { BRANCHES } from '../index'; // Import main branches list
 
 export default function BranchDashboard() {
   const { id } = useLocalSearchParams();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [orderText, setOrderText] = useState('');
+
   const branch = BRANCHES.find(b => b.id === id) || { 
     name: 'Unknown Branch', 
     location: 'Location not found', 
@@ -22,7 +26,16 @@ export default function BranchDashboard() {
   ] as const;
 
   const handleOrder = () => {
-    const message = `Hello ${branch.name}, I would like to place an order for some medications. Please guide me on how to proceed.`;
+    setModalVisible(true);
+  };
+
+  const confirmOrder = () => {
+    if (!orderText.trim()) {
+      Alert.alert('Message', 'Please type the name of the drugs you want to order.');
+      return;
+    }
+
+    const message = `*DRUG ORDER REQUEST*\n\nBranch: ${branch.name}\n\nDrugs Needed:\n${orderText}\n\n_Please confirm availability and total cost._`;
     const url = `whatsapp://send?phone=${branch.phone.replace(/[^0-9]/g, '')}&text=${encodeURIComponent(message)}`;
     
     Linking.canOpenURL(url).then(supported => {
@@ -32,6 +45,8 @@ export default function BranchDashboard() {
         const fallbackUrl = `https://wa.me/${branch.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
         Linking.openURL(fallbackUrl);
       }
+      setModalVisible(false);
+      setOrderText('');
     }).catch(() => {
       Alert.alert('Error', 'WhatsApp is not installed on your device');
     });
@@ -54,105 +69,159 @@ export default function BranchDashboard() {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
-        <TouchableOpacity 
-          onPress={() => router.canGoBack() ? router.back() : router.replace('/(drawer)/(dashboard)/pharmacy' as any)} 
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color="#0f172a" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Branch Details</Text>
-      </View>
-
-      <View style={styles.mainContent}>
-        <View style={styles.banner}>
-          <View style={styles.bannerHeader}>
-            <Text style={styles.branchName}>{branch.name}</Text>
-            <View style={[
-              styles.statusBadge, 
-              isClosed ? styles.statusClosedBg : styles.statusOpenBg
-            ]}>
-              <View style={[
-                styles.statusDot, 
-                isClosed ? styles.statusClosedDot : styles.statusOpenDot
-              ]} />
-              <Text style={[
-                styles.statusText,
-                isClosed ? styles.statusClosedText : styles.statusOpenText
-              ]}>{branch.status}</Text>
-            </View>
-          </View>
-
-          <View style={styles.infoContainer}>
-            <View style={styles.infoRow}>
-              <View style={styles.iconCircleDark}>
-                <Ionicons name="location" size={16} color="#cbd5e1" />
-              </View>
-              <Text style={styles.infoText}>{branch.location}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <View style={styles.iconCircleDark}>
-                <Ionicons name="call" size={16} color="#cbd5e1" />
-              </View>
-              <Text style={styles.infoText}>{branch.phone}</Text>
-            </View>
-          </View>
-        </View>
-
-        <Text style={styles.sectionTitle}>Pharmacy Actions</Text>
-        
-        <View style={styles.actionGrid}>
-          <TouchableOpacity style={[styles.actionBtn, styles.orderBtn]} activeOpacity={0.8} onPress={handleOrder}>
-            <View style={styles.btnIconBg}>
-              <Ionicons name="cart" size={24} color="#ffffff" />
-            </View>
-            <Text style={[styles.btnText, styles.orderBtnText]}>Order Drugs</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.actionBtn, styles.consultBtn]} activeOpacity={0.8} onPress={handleConsult}>
-            <View style={[styles.btnIconBg, { backgroundColor: '#16a34a' }]}>
-              <Ionicons name="logo-whatsapp" size={24} color="#ffffff" />
-            </View>
-            <Text style={styles.btnText}>Health Consult</Text>
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.sectionTitle}>Live Status</Text>
-        
-        <View style={styles.grid}>
-          {widgets.map((w, index) => (
-            <View key={index} style={styles.widgetWrapper}>
-              <View style={styles.widgetCard}>
-                <View style={styles.widgetHeader}>
-                  <View style={[styles.iconContainer, { backgroundColor: w.color + '15' }]}>
-                    <Ionicons name={w.icon as any} size={24} color={w.color} />
-                  </View>
+    <>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.modalOverlay}>
+            <KeyboardAvoidingView 
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={styles.modalContent}
+            >
+              <View style={styles.modalHeader}>
+                <View style={styles.modalIconBg}>
+                  <Ionicons name="cart-outline" size={24} color="#16a34a" />
                 </View>
-                <Text style={styles.widgetValue}>{w.value}</Text>
-                <Text style={styles.widgetTitle}>{w.title}</Text>
-                <Text style={styles.widgetLabel}>{w.label}</Text>
+                <View style={{flex: 1}}>
+                  <Text style={styles.modalTitle}>Order Drugs</Text>
+                  <Text style={styles.modalSubtitle}>{branch.name}</Text>
+                </View>
+                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeBtn}>
+                  <Ionicons name="close" size={24} color="#64748b" />
+                </TouchableOpacity>
               </View>
-            </View>
-          ))}
+
+              <Text style={styles.inputLabel}>What drugs do you need?</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="e.g. Paracetamol 500mg (2 blisters), Amoxicillin..."
+                placeholderTextColor="#94a3b8"
+                multiline
+                numberOfLines={4}
+                value={orderText}
+                onChangeText={setOrderText}
+                textAlignVertical="top"
+              />
+
+              <TouchableOpacity 
+                style={styles.sendOrderBtn} 
+                activeOpacity={0.9}
+                onPress={confirmOrder}
+              >
+                <Ionicons name="logo-whatsapp" size={20} color="#ffffff" style={{marginRight: 8}} />
+                <Text style={styles.sendOrderText}>Send Order via WhatsApp</Text>
+              </TouchableOpacity>
+              
+              <Text style={styles.modalFooterText}>The pharmacist will respond to your request immediately upon receiving your WhatsApp message.</Text>
+            </KeyboardAvoidingView>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <TouchableOpacity 
+            onPress={() => router.canGoBack() ? router.back() : router.replace('/(drawer)/(dashboard)/pharmacy' as any)} 
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color="#0f172a" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Branch Details</Text>
         </View>
 
-        <TouchableOpacity 
-          style={styles.actionButton} 
-          activeOpacity={0.9} 
-          onPress={() => {
-            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${branch.name} ${branch.location}`)}`;
-            Linking.openURL(mapUrl);
-          }}
-        >
-          <Ionicons name="map" size={20} color="#ffffff" style={{marginRight: 8}} />
-          <Text style={styles.actionText}>Get Directions</Text>
-        </TouchableOpacity>
-      </View>
-      
-      {/* Bottom Padding */}
-      <View style={{height: 40}} />
-    </ScrollView>
+        <View style={styles.mainContent}>
+          <View style={styles.banner}>
+            <View style={styles.bannerHeader}>
+              <Text style={styles.branchName}>{branch.name}</Text>
+              <View style={[
+                styles.statusBadge, 
+                isClosed ? styles.statusClosedBg : styles.statusOpenBg
+              ]}>
+                <View style={[
+                  styles.statusDot, 
+                  isClosed ? styles.statusClosedDot : styles.statusOpenDot
+                ]} />
+                <Text style={[
+                  styles.statusText,
+                  isClosed ? styles.statusClosedText : styles.statusOpenText
+                ]}>{branch.status}</Text>
+              </View>
+            </View>
+
+            <View style={styles.infoContainer}>
+              <View style={styles.infoRow}>
+                <View style={styles.iconCircleDark}>
+                  <Ionicons name="location" size={16} color="#cbd5e1" />
+                </View>
+                <Text style={styles.infoText}>{branch.location}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <View style={styles.iconCircleDark}>
+                  <Ionicons name="call" size={16} color="#cbd5e1" />
+                </View>
+                <Text style={styles.infoText}>{branch.phone}</Text>
+              </View>
+            </View>
+          </View>
+
+          <Text style={styles.sectionTitle}>Pharmacy Actions</Text>
+          
+          <View style={styles.actionGrid}>
+            <TouchableOpacity style={[styles.actionBtn, styles.orderBtn]} activeOpacity={0.8} onPress={handleOrder}>
+              <View style={styles.btnIconBg}>
+                <Ionicons name="cart" size={24} color="#ffffff" />
+              </View>
+              <Text style={[styles.btnText, styles.orderBtnText]}>Order Drugs</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.actionBtn, styles.consultBtn]} activeOpacity={0.8} onPress={handleConsult}>
+              <View style={[styles.btnIconBg, { backgroundColor: '#16a34a' }]}>
+                <Ionicons name="logo-whatsapp" size={24} color="#ffffff" />
+              </View>
+              <Text style={styles.btnText}>Health Consult</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.sectionTitle}>Live Status</Text>
+          
+          <View style={styles.grid}>
+            {widgets.map((w, index) => (
+              <View key={index} style={styles.widgetWrapper}>
+                <View style={styles.widgetCard}>
+                  <View style={styles.widgetHeader}>
+                    <View style={[styles.iconContainer, { backgroundColor: w.color + '15' }]}>
+                      <Ionicons name={w.icon as any} size={24} color={w.color} />
+                    </View>
+                  </View>
+                  <Text style={styles.widgetValue}>{w.value}</Text>
+                  <Text style={styles.widgetTitle}>{w.title}</Text>
+                  <Text style={styles.widgetLabel}>{w.label}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+
+          <TouchableOpacity 
+            style={styles.actionButton} 
+            activeOpacity={0.9} 
+            onPress={() => {
+              const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${branch.name} ${branch.location}`)}`;
+              Linking.openURL(mapUrl);
+            }}
+          >
+            <Ionicons name="map" size={20} color="#ffffff" style={{marginRight: 8}} />
+            <Text style={styles.actionText}>Get Directions</Text>
+          </TouchableOpacity>
+        </View>
+        
+        {/* Bottom Padding */}
+        <View style={{height: 40}} />
+      </ScrollView>
+    </>
   );
 }
 
@@ -401,4 +470,90 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.5
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    padding: 24,
+    paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+    minHeight: 400,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  modalIconBg: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#f0fdf4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#0f172a',
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: '#64748b',
+    fontWeight: '500',
+  },
+  closeBtn: {
+    padding: 8,
+    backgroundColor: '#f1f5f9',
+    borderRadius: 12,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#475569',
+    marginBottom: 8,
+    marginLeft: 4,
+  },
+  textInput: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 20,
+    padding: 16,
+    height: 120,
+    fontSize: 16,
+    color: '#0f172a',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 24,
+  },
+  sendOrderBtn: {
+    backgroundColor: '#16a34a',
+    height: 60,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#16a34a',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
+    marginBottom: 16,
+  },
+  sendOrderText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  modalFooterText: {
+    fontSize: 12,
+    color: '#94a3b8',
+    textAlign: 'center',
+    lineHeight: 18,
+    paddingHorizontal: 10,
+  }
 });
