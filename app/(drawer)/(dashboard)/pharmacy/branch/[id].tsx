@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { BRANCHES } from '../index'; // Import main branches list
@@ -20,6 +20,38 @@ export default function BranchDashboard() {
     { title: 'Staff on Duty', value: '4', label: 'Pharmacists', icon: 'people', color: '#0ea5e9' },
     { title: 'Prescriptions', value: 'Ready', label: 'Processing online', icon: 'receipt', color: '#10b981' },
   ] as const;
+
+  const handleOrder = () => {
+    const message = `Hello ${branch.name}, I would like to place an order for some medications. Please guide me on how to proceed.`;
+    const url = `whatsapp://send?phone=${branch.phone.replace(/[^0-9]/g, '')}&text=${encodeURIComponent(message)}`;
+    
+    Linking.canOpenURL(url).then(supported => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        const fallbackUrl = `https://wa.me/${branch.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+        Linking.openURL(fallbackUrl);
+      }
+    }).catch(() => {
+      Alert.alert('Error', 'WhatsApp is not installed on your device');
+    });
+  };
+
+  const handleConsult = () => {
+    const template = `Hello ${branch.name} Pharmacist,\n\nI have the following health concerns:\n- Symptoms: \n- Duration: \n- Existing Conditions: \n\nKindly provide professional advice.`;
+    const url = `whatsapp://send?phone=${branch.phone.replace(/[^0-9]/g, '')}&text=${encodeURIComponent(template)}`;
+    
+    Linking.canOpenURL(url).then(supported => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        const fallbackUrl = `https://wa.me/${branch.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(template)}`;
+        Linking.openURL(fallbackUrl);
+      }
+    }).catch(() => {
+      Alert.alert('Error', 'WhatsApp is not installed on your device');
+    });
+  };
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -68,6 +100,24 @@ export default function BranchDashboard() {
           </View>
         </View>
 
+        <Text style={styles.sectionTitle}>Pharmacy Actions</Text>
+        
+        <View style={styles.actionGrid}>
+          <TouchableOpacity style={[styles.actionBtn, styles.orderBtn]} activeOpacity={0.8} onPress={handleOrder}>
+            <View style={styles.btnIconBg}>
+              <Ionicons name="cart" size={24} color="#ffffff" />
+            </View>
+            <Text style={[styles.btnText, styles.orderBtnText]}>Order Drugs</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.actionBtn, styles.consultBtn]} activeOpacity={0.8} onPress={handleConsult}>
+            <View style={[styles.btnIconBg, { backgroundColor: '#16a34a' }]}>
+              <Ionicons name="logo-whatsapp" size={24} color="#ffffff" />
+            </View>
+            <Text style={styles.btnText}>Health Consult</Text>
+          </TouchableOpacity>
+        </View>
+
         <Text style={styles.sectionTitle}>Live Status</Text>
         
         <View style={styles.grid}>
@@ -87,7 +137,14 @@ export default function BranchDashboard() {
           ))}
         </View>
 
-        <TouchableOpacity style={styles.actionButton} activeOpacity={0.9}>
+        <TouchableOpacity 
+          style={styles.actionButton} 
+          activeOpacity={0.9} 
+          onPress={() => {
+            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${branch.name} ${branch.location}`)}`;
+            Linking.openURL(mapUrl);
+          }}
+        >
           <Ionicons name="map" size={20} color="#ffffff" style={{marginRight: 8}} />
           <Text style={styles.actionText}>Get Directions</Text>
         </TouchableOpacity>
@@ -224,9 +281,52 @@ const styles = StyleSheet.create({
     fontSize: 20, 
     fontWeight: '800', 
     color: '#0f172a', 
+    marginTop: 8,
     marginBottom: 16, 
     marginLeft: 4,
     letterSpacing: -0.5 
+  },
+  actionGrid: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 24,
+  },
+  actionBtn: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  orderBtn: {
+    backgroundColor: '#1a6b2f',
+  },
+  consultBtn: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  btnIconBg: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  btnText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#0f172a',
+  },
+  orderBtnText: {
+    color: '#ffffff',
   },
   grid: { 
     flexDirection: 'row', 
