@@ -134,7 +134,7 @@ export default function HomeDashboard() {
           <Ionicons name="shield-checkmark" size={24} color="#1a6b2f" />
           <Text style={styles.infoTitle}>Xerion & Doxa Promise</Text>
         </View>
-        <Text style={styles.infoText}>We are committed to providing the best healthcare, pharmacy, and laboratory services across all our state-of-the-art branches.</Text>
+        <Text style={styles.infoText}>We are committed to providing the best healthcare, wholesale, and diagnostic services as we expand our footprint across Ghana and the African continent.</Text>
         <TouchableOpacity style={styles.outlineButton} onPress={() => router.push('/about')}>
           <Text style={styles.outlineButtonText}>Learn More About Us</Text>
         </TouchableOpacity>

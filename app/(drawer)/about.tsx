@@ -21,7 +21,7 @@ export default function AboutScreen() {
             <Text style={styles.cardTitle}>Who We Are</Text>
           </View>
           <Text style={styles.text}>
-            Xerion & Doxa Chemist Limited is a premier provider of pharmacy and laboratory services dedicated to improving community health and wellness. Founded on the principles of excellence and care, our state-of-the-art facilities ensure accurate diagnostics and an extensive selection of high-quality pharmaceutical products.
+            Xerion & Doxa Chemist Limited is a premier provider of pharmacy, laboratory, and **wholesale services** dedicated to improving healthcare access. Currently located in **Tamale and Sawla**, we are committed to delivering high-quality pharmaceutical products and accurate diagnostics to our growing community.
           </Text>
         </View>
 
@@ -40,7 +40,7 @@ export default function AboutScreen() {
               <Ionicons name="eye-outline" size={24} color="#ea580c" />
             </View>
             <Text style={styles.gridTitle}>Our Vision</Text>
-            <Text style={styles.gridText}>To be the most trusted and accessible pharmacy and diagnostic network nationwide.</Text>
+            <Text style={styles.gridText}>To be the most trusted healthcare network, spreading our reach across the whole of Ghana and into other African countries.</Text>
           </View>
         </View>
 

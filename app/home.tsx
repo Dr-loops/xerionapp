@@ -247,8 +247,7 @@ export default function HomeScreen() {
               <Text style={styles.sectionTitle}>About Us</Text>
             </View>
             <Text style={styles.sectionText}>
-              Xerion &amp; Doxa Chemist Limited is a leading healthcare company operating across multiple branches in Ghana.
-              Founded on the values of integrity, compassion, and excellence, we deliver world-class pharmacy and laboratory services.
+              Xerion &amp; Doxa Chemist Limited is a leading healthcare company providing pharmacy, laboratory, and wholesale services. Currently based in Tamale and Sawla, we are aiming to bring our quality care to the whole of Ghana and other African countries.
             </Text>
             <Text style={styles.sectionText}>
               Our dedicated team of pharmacists and lab scientists work around the clock to ensure every patient receives personalised, accurate, and affordable care.
