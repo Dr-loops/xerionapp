@@ -51,7 +51,11 @@ export default function LaboratoryDashboard() {
   const monthName = currentDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
   const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-  const timeSlots = ['08:00 AM', '09:30 AM', '11:00 AM', '01:00 PM', '02:30 PM', '04:00 PM'];
+  const timeSlots = [
+    '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', 
+    '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', 
+    '06:00 PM', '07:00 PM', '08:00 PM'
+  ];
 
   const widgets = [
     { id: '1', title: 'Schedule Test', icon: 'calendar', color: '#8b5cf6', info: 'Book your home/lab visit', action: () => setShowSchedule(true) },
@@ -237,27 +241,40 @@ export default function LaboratoryDashboard() {
         animationType="slide"
         onRequestClose={() => setShowSchedule(false)}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <TouchableWithoutFeedback onPress={() => {
+          Keyboard.dismiss();
+          setShowSchedule(false);
+        }}>
           <View style={styles.modalOverlay}>
-            <View style={[styles.modalContent, { maxHeight: '90%' }]}>
-              <View style={styles.modalHeader}>
-                <View style={[styles.modalIconCircle, { backgroundColor: '#8b5cf615' }]}>
-                  <Ionicons name="calendar" size={28} color="#8b5cf6" />
+            <TouchableWithoutFeedback onPress={(e) => {
+              // Capture touches on modal content to prevent closing/dismissing when clicking inside
+              if (Platform.OS !== 'web') {
+                // In RN mobile, this stops propagation
+              }
+            }}>
+              <View style={[styles.modalContent, { maxHeight: '90%' }]}>
+                <View style={styles.modalHeader}>
+                  <View style={[styles.modalIconCircle, { backgroundColor: '#8b5cf615' }]}>
+                    <Ionicons name="calendar" size={28} color="#8b5cf6" />
+                  </View>
+                  <View style={{ flex: 1, marginLeft: 16 }}>
+                    <Text style={styles.modalTitle}>Schedule a Test</Text>
+                    <Text style={styles.modalSub}>Select your preferred slot</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => setShowSchedule(false)}>
+                    <Ionicons name="close-circle" size={32} color="#cbd5e1" />
+                  </TouchableOpacity>
                 </View>
-                <View style={{ flex: 1, marginLeft: 16 }}>
-                  <Text style={styles.modalTitle}>Schedule a Test</Text>
-                  <Text style={styles.modalSub}>Select your preferred slot</Text>
-                </View>
-                <TouchableOpacity onPress={() => setShowSchedule(false)}>
-                  <Ionicons name="close-circle" size={32} color="#cbd5e1" />
-                </TouchableOpacity>
-              </View>
 
-              <KeyboardAvoidingView 
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                style={{ flex: 1 }}
-              >
-                <ScrollView contentContainerStyle={styles.modalScroll} showsVerticalScrollIndicator={false}>
+                <KeyboardAvoidingView 
+                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                  style={{ flex: 1 }}
+                >
+                  <ScrollView 
+                    contentContainerStyle={styles.modalScroll} 
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                  >
                   {/* Real Grid Calendar */}
                   <View style={styles.calendarContainer}>
                     <View style={styles.calendarHeader}>
@@ -365,6 +382,7 @@ export default function LaboratoryDashboard() {
                 </TouchableOpacity>
               </KeyboardAvoidingView>
             </View>
+            </TouchableWithoutFeedback>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
