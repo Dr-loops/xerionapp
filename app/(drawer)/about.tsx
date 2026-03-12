@@ -102,8 +102,8 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   heroTitle: {
-    fontSize: 28,
-    fontWeight: '800',
+    fontSize: 32,
+    fontWeight: '900',
     color: '#0f172a',
     letterSpacing: -0.5,
   },

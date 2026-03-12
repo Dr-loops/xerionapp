@@ -100,7 +100,7 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          <Text style={styles.heroTitle}>Your Trusted{'\n'}Healthcare Partner</Text>
+          <Text style={styles.heroTitle}>PANACEA OF HEALTH</Text>
           <Text style={styles.heroSub}>
             Quality pharmacy &amp; laboratory services across all our branches. Panacea of Health.
           </Text>
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   logoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
   logo: { width: 52, height: 52, borderRadius: 14, borderWidth: 2, borderColor: '#f97316', backgroundColor: '#ffffff' },
   brandText: { marginLeft: 12 },
-  brandName: { fontSize: 22, fontWeight: '900', color: '#f97316', letterSpacing: 0.3 },
+  brandName: { fontSize: 28, fontWeight: '900', color: '#f97316', letterSpacing: 0.5 },
   brandSub: { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.7)', letterSpacing: 2 },
   heroTitle: { fontSize: 34, fontWeight: '900', color: '#ffffff', lineHeight: 42, marginBottom: 10, letterSpacing: -0.5 },
   heroSub: { fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 22, marginBottom: 24, fontWeight: '500' },

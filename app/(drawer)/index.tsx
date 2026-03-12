@@ -200,10 +200,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   brandName: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '900',
     color: '#f97316',
-    letterSpacing: 0.3,
+    letterSpacing: 0.5,
     textShadowColor: 'rgba(0,0,0,0.3)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,

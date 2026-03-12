@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     borderColor: '#ffffff',
   },
   companyName: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: '900',
     color: '#f97316',
     letterSpacing: 0.5,

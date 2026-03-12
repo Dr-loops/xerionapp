@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   appBrand: {
-    fontSize: 36,
+    fontSize: 42,
     fontWeight: '900',
     color: '#f97316',
     letterSpacing: 0.5,
