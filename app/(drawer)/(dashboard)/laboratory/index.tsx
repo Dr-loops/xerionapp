@@ -3,12 +3,41 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
+export const LAB_BRANCHES = [
+  { 
+    id: '1', 
+    name: 'XERION DIAGNOSTICS - TAMALE', 
+    location: 'TAMALE CENTRAL, NEAR OLD MARKET', 
+    phone: '0547454731', 
+    status: 'Open Now',
+    images: [
+      'https://images.unsplash.com/photo-1579152276507-dc3f34ccc524?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1511174511562-5f7f18b874f8?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1532187875605-7fe35f47b1e4?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1579152276481-1250109a1599?q=80&w=800&auto=format&fit=crop'
+    ]
+  },
+  { 
+    id: '2', 
+    name: 'DOXA CLINICAL LABS - SAWLA', 
+    location: 'SAWLA MAIN ROAD, ADJACENT POST OFFICE', 
+    phone: '0240697362', 
+    status: 'Open Now',
+    images: [
+      'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=800&auto=format&fit=crop'
+    ]
+  },
+];
+
 export default function LaboratoryDashboard() {
   const widgets = [
     { id: '1', title: 'Schedule Test', icon: 'calendar', color: '#8b5cf6', info: 'Book your home/lab visit' },
     { id: '2', title: 'Test Results', icon: 'document-text', color: '#10b981', info: 'View recent lab reports' },
     { id: '3', title: 'Health Packages', icon: 'medkit', color: '#f43f5e', info: 'Checkup bundles & offers' },
-    { id: '4', title: 'Find a Lab', icon: 'location', color: '#0ea5e9', info: 'Locate nearest test center' },
+    { id: '4', title: 'Find a Lab', icon: 'location', color: '#0ea5e9', info: 'Locate nearest test center', route: '/laboratory/branch/1' },
   ] as const;
 
   return (
@@ -48,7 +77,11 @@ export default function LaboratoryDashboard() {
       <View style={styles.grid}>
         {widgets.map(w => (
           <View key={w.id} style={styles.widgetWrapper}>
-            <TouchableOpacity style={styles.widgetCard} activeOpacity={0.9}>
+            <TouchableOpacity 
+              style={styles.widgetCard} 
+              activeOpacity={0.9}
+              onPress={() => (w as any).route && router.push((w as any).route)}
+            >
               <View style={[styles.iconContainer, { backgroundColor: w.color + '15' }]}>
                 <Ionicons name={w.icon as any} size={28} color={w.color} />
               </View>

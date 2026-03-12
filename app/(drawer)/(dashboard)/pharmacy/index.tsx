@@ -4,13 +4,97 @@ import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export const BRANCHES = [
-  { id: '1', name: 'XERION CHEMIST', location: 'GURUGU, GOIL FILLING STATION, JISONAYILI JUNCTION', phone: '0596455844', status: 'Open Now' },
-  { id: '2', name: 'XERION CHEMIST', location: 'SAWLA', phone: '05390011725', status: 'Open Now' },
-  { id: '3', name: 'DOXA CHEMIST', location: 'DABOKPA, OPPOSITE GHANASCO', phone: '0596821559', status: 'Open Now' },
-  { id: '4', name: 'DOXA CHEMIST (ANNEX)', location: 'GURUGU, KPALU JUNCTION', phone: '059825588', status: 'Open Now' },
-  { id: '5', name: 'XERION CHEMIST (ANNEX)', location: 'YONG', phone: '0240697362', status: 'Open Now' },
-  { id: '6', name: 'XERION CHEMIST', location: 'STADIUM, SAGNARIGU ROAD', phone: '259674227', status: 'Open Now' },
-  { id: '7', name: 'XERION CHEMIST (WHOLESALE)', location: 'TARGET', phone: '0547454731', status: 'Open Now' },
+  { 
+    id: '1', 
+    name: 'XERION CHEMIST', 
+    location: 'GURUGU, GOIL FILLING STATION, JISONAYILI JUNCTION', 
+    phone: '0596455844', 
+    status: 'Open Now',
+    images: [
+      'https://images.unsplash.com/photo-1586015555751-63bb77f4322a?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1631549916768-4119b295f7ef?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1576602976047-174e57a47881?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1587854692152-cbe660867719?q=80&w=800&auto=format&fit=crop'
+    ]
+  },
+  { 
+    id: '2', 
+    name: 'XERION CHEMIST', 
+    location: 'SAWLA', 
+    phone: '05390011725', 
+    status: 'Open Now',
+    images: [
+      'https://images.unsplash.com/photo-1585435557343-3b092031a831?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1607619056574-7b8d3ee5366b?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1579165466541-74e21777b075?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1628771065518-0d82f159ffc0?q=80&w=800&auto=format&fit=crop'
+    ]
+  },
+  { 
+    id: '3', 
+    name: 'DOXA CHEMIST', 
+    location: 'DABOKPA, OPPOSITE GHANASCO', 
+    phone: '0596821559', 
+    status: 'Open Now',
+    images: [
+      'https://images.unsplash.com/photo-1547489432-cf93fa6c71ee?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1583324113626-70df0f43aaad?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1631549916768-4119b295f7ef?q=80&w=800&auto=format&fit=crop'
+    ]
+  },
+  { 
+    id: '4', 
+    name: 'DOXA CHEMIST (ANNEX)', 
+    location: 'GURUGU, KPALU JUNCTION', 
+    phone: '059825588', 
+    status: 'Open Now',
+    images: [
+      'https://images.unsplash.com/photo-1576602976047-174e57a47881?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1587854692152-cbe660867719?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1586015555751-63bb77f4322a?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1585435557343-3b092031a831?q=80&w=800&auto=format&fit=crop'
+    ]
+  },
+  { 
+    id: '5', 
+    name: 'XERION CHEMIST (ANNEX)', 
+    location: 'YONG', 
+    phone: '0240697362', 
+    status: 'Open Now',
+    images: [
+      'https://images.unsplash.com/photo-1607619056574-7b8d3ee5366b?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1579165466541-74e21777b075?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1628771065518-0d82f159ffc0?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1547489432-cf93fa6c71ee?q=80&w=800&auto=format&fit=crop'
+    ]
+  },
+  { 
+    id: '6', 
+    name: 'XERION CHEMIST', 
+    location: 'STADIUM, SAGNARIGU ROAD', 
+    phone: '259674227', 
+    status: 'Open Now',
+    images: [
+      'https://images.unsplash.com/photo-1583324113626-70df0f43aaad?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1631549916768-4119b295f7ef?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1576602976047-174e57a47881?q=80&w=800&auto=format&fit=crop'
+    ]
+  },
+  { 
+    id: '7', 
+    name: 'XERION CHEMIST (WHOLESALE)', 
+    location: 'TARGET', 
+    phone: '0547454731', 
+    status: 'Open Now',
+    images: [
+      'https://images.unsplash.com/photo-1587854692152-cbe660867719?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1586015555751-63bb77f4322a?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1585435557343-3b092031a831?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1607619056574-7b8d3ee5366b?q=80&w=800&auto=format&fit=crop'
+    ]
+  },
 ];
 
 export default function PharmacyDashboard() {

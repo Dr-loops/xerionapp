@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert, Modal, TextInput, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert, Modal, TextInput, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Image } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { BRANCHES } from '../index'; // Import main branches list
 
 export default function BranchDashboard() {
@@ -183,6 +184,31 @@ export default function BranchDashboard() {
                 <Text style={styles.infoText}>{branch.phone}</Text>
               </View>
             </View>
+          </View>
+
+          {/* Image Gallery Section */}
+          <View style={styles.galleryContainer}>
+            <View style={styles.galleryHeader}>
+              <Text style={styles.sectionTitleSmall}>Facility Gallery</Text>
+              <Text style={styles.imageCount}>4 Photos</Text>
+            </View>
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false} 
+              contentContainerStyle={styles.galleryScroll}
+              decelerationRate="fast"
+              snapToInterval={280 + 16}
+            >
+              {(branch as any).images?.map((img: string, idx: number) => (
+                <View key={idx} style={styles.imageWrapper}>
+                  <Image source={{ uri: img }} style={styles.branchImage} />
+                  <LinearGradient
+                    colors={['transparent', 'rgba(0,0,0,0.4)']}
+                    style={styles.imageOverlay}
+                  />
+                </View>
+              ))}
+            </ScrollView>
           </View>
 
           <Text style={styles.sectionTitle}>Pharmacy Actions</Text>
@@ -578,5 +604,58 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 18,
     paddingHorizontal: 10,
+  },
+  galleryContainer: {
+    marginBottom: 24,
+  },
+  galleryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+    marginBottom: 12,
+  },
+  sectionTitleSmall: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#0f172a',
+    letterSpacing: -0.5,
+  },
+  imageCount: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#64748b',
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  galleryScroll: {
+    paddingRight: 20,
+  },
+  imageWrapper: {
+    width: 280,
+    height: 180,
+    borderRadius: 20,
+    marginRight: 16,
+    overflow: 'hidden',
+    backgroundColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  branchImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  imageOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '40%',
   }
 });
