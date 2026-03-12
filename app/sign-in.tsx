@@ -1,8 +1,9 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform, Dimensions, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform, Dimensions, Image, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -10,6 +11,38 @@ export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSignIn = async () => {
+    // Basic validation
+    if (!email || !password) {
+      alert('Please enter your email and password');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      // Create a mock user profile if none exists
+      const mockUser = {
+        firstName: 'Valued',
+        lastName: 'Customer',
+        email: email,
+        phone: '059 000 0000',
+      };
+      
+      await AsyncStorage.setItem('user_profile', JSON.stringify(mockUser));
+      
+      // Delay for realistic feel
+      setTimeout(() => {
+        router.replace('/(drawer)');
+      }, 1000);
+      
+    } catch (e) {
+      console.error('Sign in error:', e);
+      alert('Failed to sign in. Please try again.');
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -51,6 +84,7 @@ export default function SignInScreen() {
                     autoCapitalize="none"
                     value={email}
                     onChangeText={setEmail}
+                    editable={!loading}
                   />
                 </View>
               </View>
@@ -66,37 +100,45 @@ export default function SignInScreen() {
                     secureTextEntry={!showPassword}
                     value={password}
                     onChangeText={setPassword}
+                    editable={!loading}
                   />
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon} disabled={loading}>
                     <Ionicons name={showPassword ? "eye-off" : "eye"} size={20} color="#94a3b8" />
                   </TouchableOpacity>
                 </View>
               </View>
 
-              <TouchableOpacity style={styles.forgotPassword}>
+              <TouchableOpacity style={styles.forgotPassword} disabled={loading}>
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
 
               <TouchableOpacity 
                 style={styles.primaryButton}
                 activeOpacity={0.9}
-                onPress={() => router.replace('/')}
+                onPress={handleSignIn}
+                disabled={loading}
               >
                 <LinearGradient
-                  colors={['#1a6b2f', '#2d8c49']}
+                  colors={loading ? ['#94a3b8', '#64748b'] : ['#1a6b2f', '#2d8c49']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={styles.buttonGradient}
                 >
-                  <Text style={styles.primaryButtonText}>Sign In</Text>
-                  <Ionicons name="arrow-forward" size={20} color="#ffffff" style={{marginLeft: 8}} />
+                  {loading ? (
+                    <ActivityIndicator size="small" color="#ffffff" />
+                  ) : (
+                    <>
+                      <Text style={styles.primaryButtonText}>Sign In</Text>
+                      <Ionicons name="arrow-forward" size={20} color="#ffffff" style={{marginLeft: 8}} />
+                    </>
+                  )}
                 </LinearGradient>
               </TouchableOpacity>
             </View>
 
             <View style={styles.footer}>
               <Text style={styles.footerText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => router.push('/register')}>
+              <TouchableOpacity onPress={() => router.push('/register')} disabled={loading}>
                 <Text style={styles.linkText}>Register Now</Text>
               </TouchableOpacity>
             </View>
