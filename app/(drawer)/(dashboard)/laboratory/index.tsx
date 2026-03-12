@@ -7,8 +7,9 @@ export const LAB_BRANCHES = [
   { 
     id: '1', 
     name: 'XERION MEDICAL LABORATORY', 
-    location: 'TAMALE CENTRAL, NEAR OLD MARKET', 
-    phone: '0547454731', 
+    location: 'GURUGU, GOIL FEELING STATION, JISONAYILI JUNCTION', 
+    phone: '0595441825', 
+    whatsapp: '0246344188',
     status: 'Open Now',
     images: [
       'https://images.unsplash.com/photo-1579152276507-dc3f34ccc524?q=80&w=800&auto=format&fit=crop',

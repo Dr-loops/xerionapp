@@ -31,7 +31,8 @@ export default function LabBranchDashboard() {
       ? `Health Consultation for ${branch.name}: ${inputText}`
       : `Test Request for ${branch.name}: ${inputText}`;
     
-    const url = `whatsapp://send?phone=${branch.phone}&text=${encodeURIComponent(message)}`;
+    const whatsappNum = (branch as any).whatsapp || branch.phone;
+    const url = `whatsapp://send?phone=${whatsappNum}&text=${encodeURIComponent(message)}`;
     
     Linking.canOpenURL(url).then(supported => {
       if (supported) {
