@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 export const LAB_BRANCHES = [
   { 
     id: '1', 
-    name: 'XERION DIAGNOSTICS - TAMALE', 
+    name: 'XERION MEDICAL LABORATORY', 
     location: 'TAMALE CENTRAL, NEAR OLD MARKET', 
     phone: '0547454731', 
     status: 'Open Now',
@@ -15,19 +15,6 @@ export const LAB_BRANCHES = [
       'https://images.unsplash.com/photo-1511174511562-5f7f18b874f8?q=80&w=800&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1532187875605-7fe35f47b1e4?q=80&w=800&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1579152276481-1250109a1599?q=80&w=800&auto=format&fit=crop'
-    ]
-  },
-  { 
-    id: '2', 
-    name: 'DOXA CLINICAL LABS - SAWLA', 
-    location: 'SAWLA MAIN ROAD, ADJACENT POST OFFICE', 
-    phone: '0240697362', 
-    status: 'Open Now',
-    images: [
-      'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=800&auto=format&fit=crop'
     ]
   },
 ];
