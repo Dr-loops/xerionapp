@@ -21,7 +21,7 @@ export default function AboutScreen() {
             <Text style={styles.cardTitle}>Who We Are</Text>
           </View>
           <Text style={styles.text}>
-            Xerion & Doxa Chemist Limited is a premier provider of pharmacy, laboratory, and **wholesale services** dedicated to improving healthcare access. Currently located in **Tamale and Sawla**, we are committed to delivering high-quality pharmaceutical products and accurate diagnostics to our growing community.
+            Xerion & Doxa Chemist Limited is a premier provider of pharmacy, laboratory, and drug wholesales dedicated to improving healthcare access. Currently located in Tamale and Sawla, we are committed to delivering high-quality pharmaceutical products and accurate diagnostics to our growing community. We also provide a delivery service that delivers drugs to our clients who can't come in person to our pharmacies.
           </Text>
         </View>
 
