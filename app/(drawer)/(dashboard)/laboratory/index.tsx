@@ -27,17 +27,29 @@ export default function LaboratoryDashboard() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [testsNeeded, setTestsNeeded] = useState('');
-  
-  const next7Days = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() + i);
-    return {
-      day: d.toLocaleDateString('en-US', { weekday: 'short' }),
-      date: d.getDate(),
-      month: d.toLocaleDateString('en-US', { month: 'short' }),
-      full: d.toDateString(),
-    };
-  });
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const getCalendarDays = () => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    const days = [];
+    // Add empty slots for days before the first of the month
+    for (let i = 0; i < firstDay; i++) {
+      days.push(null);
+    }
+    // Add real days
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push(new Date(year, month, i));
+    }
+    return days;
+  };
+
+  const calendarDays = getCalendarDays();
+  const monthName = currentDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
   const timeSlots = ['08:00 AM', '09:30 AM', '11:00 AM', '01:00 PM', '02:30 PM', '04:00 PM'];
 
@@ -246,25 +258,63 @@ export default function LaboratoryDashboard() {
                 style={{ flex: 1 }}
               >
                 <ScrollView contentContainerStyle={styles.modalScroll} showsVerticalScrollIndicator={false}>
-                  <Text style={styles.sectionTitleSmall}>Select Date</Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateSelector}>
-                    {next7Days.map((d, i) => (
-                      <TouchableOpacity 
-                        key={i}
-                        style={[
-                          styles.dateCard,
-                          selectedDate === d.full && styles.dateCardActive
-                        ]}
-                        onPress={() => setSelectedDate(d.full)}
-                      >
-                        <Text style={[styles.dateDay, selectedDate === d.full && styles.dateTextActive]}>{d.day}</Text>
-                        <Text style={[styles.dateNum, selectedDate === d.full && styles.dateTextActive]}>{d.date}</Text>
-                        <Text style={[styles.dateMonth, selectedDate === d.full && styles.dateTextActive]}>{d.month}</Text>
+                  {/* Real Grid Calendar */}
+                  <View style={styles.calendarContainer}>
+                    <View style={styles.calendarHeader}>
+                      <TouchableOpacity onPress={() => {
+                        const newDate = new Date(currentDate);
+                        newDate.setMonth(newDate.getMonth() - 1);
+                        setCurrentDate(newDate);
+                      }}>
+                        <Ionicons name="chevron-back" size={24} color="#64748b" />
                       </TouchableOpacity>
-                    ))}
-                  </ScrollView>
+                      <Text style={styles.calendarMonthName}>{monthName}</Text>
+                      <TouchableOpacity onPress={() => {
+                        const newDate = new Date(currentDate);
+                        newDate.setMonth(newDate.getMonth() + 1);
+                        setCurrentDate(newDate);
+                      }}>
+                        <Ionicons name="chevron-forward" size={24} color="#64748b" />
+                      </TouchableOpacity>
+                    </View>
 
-                  <Text style={[styles.sectionTitleSmall, { marginTop: 20 }]}>Select Time</Text>
+                    <View style={styles.weekDaysRow}>
+                      {weekDays.map((day, i) => (
+                        <Text key={i} style={styles.weekDayText}>{day}</Text>
+                      ))}
+                    </View>
+
+                    <View style={styles.daysGrid}>
+                      {calendarDays.map((day, i) => {
+                        if (!day) return <View key={i} style={styles.dayCell} />;
+                        const dateStr = day.toDateString();
+                        const isSelected = selectedDate === dateStr;
+                        const isToday = new Date().toDateString() === dateStr;
+                        
+                        return (
+                          <TouchableOpacity 
+                            key={i} 
+                            style={[
+                              styles.dayCell, 
+                              isSelected && styles.dayCellActive,
+                              isToday && !isSelected && styles.dayCellToday
+                            ]}
+                            onPress={() => setSelectedDate(dateStr)}
+                          >
+                            <Text style={[
+                              styles.dayText, 
+                              isSelected && styles.dayTextActive,
+                              isToday && !isSelected && styles.dayTextToday
+                            ]}>
+                              {day.getDate()}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  </View>
+
+                  <Text style={[styles.sectionTitleSmall, { marginTop: 24 }]}>Select Time Slot</Text>
                   <View style={styles.timeGrid}>
                     {timeSlots.map((t, i) => (
                       <TouchableOpacity 
@@ -280,17 +330,22 @@ export default function LaboratoryDashboard() {
                     ))}
                   </View>
 
-                  <Text style={[styles.sectionTitleSmall, { marginTop: 20 }]}>Tests Needed</Text>
-                  <View style={styles.inputWrapper}>
+                  <Text style={[styles.sectionTitleSmall, { marginTop: 24 }]}>Tests & Medical Requests</Text>
+                  <View style={styles.activeInputWrapper}>
                     <TextInput
-                      style={styles.textInput}
-                      placeholder="List the tests or symptoms here..."
+                      style={styles.activeTextInput}
+                      placeholder="Type the tests you need or your health concerns here..."
                       placeholderTextColor="#94a3b8"
                       multiline
                       numberOfLines={4}
                       value={testsNeeded}
                       onChangeText={setTestsNeeded}
+                      onFocus={() => {}} // Could add focus state logic if needed
                     />
+                    <View style={styles.inputIndicator}>
+                      <Ionicons name="pencil" size={14} color="#8b5cf6" />
+                      <Text style={styles.indicatorText}>Active Typing Space</Text>
+                    </View>
                   </View>
                 </ScrollView>
 
@@ -613,39 +668,76 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
-  // Scheduling Styles
-  dateSelector: {
-    flexDirection: 'row',
-    marginBottom: 10,
+  // New Scheduling & Calendar Styles
+  calendarContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginTop: 8,
   },
-  dateCard: {
-    width: 70,
-    height: 90,
-    backgroundColor: '#f8fafc',
-    borderRadius: 16,
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 8,
+  },
+  calendarMonthName: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#1e293b',
+  },
+  weekDaysRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  weekDayText: {
+    width: '14%',
+    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#94a3b8',
+  },
+  daysGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  dayCell: {
+    width: '14.28%',
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginBottom: 4,
+    borderRadius: 12,
+  },
+  dayCellActive: {
+    backgroundColor: '#8b5cf6',
+  },
+  dayCellToday: {
+    backgroundColor: '#f1f5f9',
     borderWidth: 1,
     borderColor: '#e2e8f0',
   },
-  dateCardActive: {
-    backgroundColor: '#8b5cf6',
-    borderColor: '#7c3aed',
-    elevation: 4,
-    shadowColor: '#8b5cf6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+  dayText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#475569',
   },
-  dateDay: { fontSize: 12, color: '#64748b', fontWeight: 'bold' },
-  dateNum: { fontSize: 20, color: '#0f172a', fontWeight: '900', marginVertical: 2 },
-  dateMonth: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
-  dateTextActive: { color: '#ffffff' },
+  dayTextActive: {
+    color: '#ffffff',
+    fontWeight: '800',
+  },
+  dayTextToday: {
+    color: '#8b5cf6',
+  },
   timeGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
+    marginTop: 12,
   },
   timeChip: {
     paddingHorizontal: 16,
@@ -663,21 +755,44 @@ const styles = StyleSheet.create({
   },
   timeText: { fontSize: 14, color: '#475569', fontWeight: '600' },
   timeTextActive: { color: '#8b5cf6', fontWeight: '800' },
-  inputWrapper: {
-    backgroundColor: '#f8fafc',
+  activeInputWrapper: {
+    backgroundColor: '#ffffff',
     borderRadius: 20,
-    padding: 16,
-    borderWidth: 1,
+    padding: 20,
+    borderWidth: 2,
     borderColor: '#e2e8f0',
-    minHeight: 100,
+    marginTop: 12,
+    shadowColor: '#8b5cf6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
-  textInput: {
-    fontSize: 15,
+  activeTextInput: {
+    fontSize: 16,
     color: '#0f172a',
+    minHeight: 120,
     textAlignVertical: 'top',
+    fontWeight: '500',
+  },
+  inputIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+    gap: 6,
+  },
+  indicatorText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#8b5cf6',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   bookBtn: {
-    marginTop: 16,
+    marginTop: 24,
     height: 56,
     borderRadius: 16,
     overflow: 'hidden',
