@@ -10,7 +10,7 @@ export default function AboutScreen() {
           <Ionicons name="medical" size={48} color="#0ea5e9" />
         </View>
         <Text style={styles.heroTitle}>Xerion & Doxa</Text>
-        <Text style={styles.heroSubtitle}>Chemist Limited</Text>
+        <Text style={styles.heroSubtitle}>Panacea of Health</Text>
       </View>
 
       <View style={styles.contentContainer}>

@@ -57,7 +57,7 @@ export default function HomeDashboard() {
         {/* App Brand in header */}
         <View style={styles.brandRow}>
           <Text style={styles.brandName}>Xerion & Doxa</Text>
-          <Text style={styles.brandSub}> Chemist Limited</Text>
+          <Text style={styles.brandSub}>Panacea of Health</Text>
         </View>
         
         {/* Quick Action Bar in Header */}

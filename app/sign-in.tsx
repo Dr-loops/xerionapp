@@ -33,7 +33,7 @@ export default function SignInScreen() {
                 />
               </View>
               <Text style={styles.appBrand}>Xerion & Doxa</Text>
-              <Text style={styles.appSub}>Chemist Limited</Text>
+              <Text style={styles.appSub}>Panacea of Health</Text>
               <Text style={styles.title}>Welcome Back</Text>
               <Text style={styles.subtitle}>Sign in to your account to continue</Text>
             </View>

@@ -14,7 +14,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           resizeMode="contain"
         />
         <Text style={styles.companyName}>Xerion & Doxa</Text>
-        <Text style={styles.companyTagline}>Chemist Limited</Text>
+        <Text style={styles.companyTagline}>Panacea of Health</Text>
       </View>
       <View style={styles.drawerDivider} />
       <View style={styles.drawerItemsContainer}>

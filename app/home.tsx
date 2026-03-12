@@ -96,13 +96,13 @@ export default function HomeScreen() {
             />
             <View style={styles.brandText}>
               <Text style={styles.brandName}>Xerion &amp; Doxa</Text>
-              <Text style={styles.brandSub}>CHEMIST LIMITED</Text>
+              <Text style={styles.brandSub}>PANACEA OF HEALTH</Text>
             </View>
           </View>
 
           <Text style={styles.heroTitle}>Your Trusted{'\n'}Healthcare Partner</Text>
           <Text style={styles.heroSub}>
-            Quality pharmacy &amp; laboratory services across all our branches. Your health, our priority.
+            Quality pharmacy &amp; laboratory services across all our branches. Panacea of Health.
           </Text>
 
           {/* NAV BAR */}
@@ -319,7 +319,7 @@ export default function HomeScreen() {
         {/* ── FOOTER ── */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>© 2025 Xerion &amp; Doxa Chemist Limited</Text>
-          <Text style={styles.footerSub}>Quality Care. Trusted Service.</Text>
+          <Text style={styles.footerSub}>Panacea of Health</Text>
         </View>
 
       </ScrollView>
