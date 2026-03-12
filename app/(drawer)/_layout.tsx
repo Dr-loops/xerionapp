@@ -66,7 +66,7 @@ export default function DrawerLayout() {
       }}
     >
       <Drawer.Screen 
-        name="index" 
+        name="(dashboard)" 
         options={{ 
           title: 'Xerion & Doxa',
           drawerLabel: 'Home',
@@ -114,15 +114,6 @@ export default function DrawerLayout() {
         }} 
       />
       
-      {/* Hide the nested routes from the drawer menu */}
-      <Drawer.Screen 
-        name="pharmacy" 
-        options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} 
-      />
-      <Drawer.Screen 
-        name="laboratory" 
-        options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} 
-      />
       <Drawer.Screen 
         name="profile" 
         options={{ 
