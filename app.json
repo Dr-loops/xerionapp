@@ -15,9 +15,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.xeriondoxa.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.xeriondoxa.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -30,6 +35,15 @@
     "plugins": [
       "expo-router"
     ],
-    "scheme": "xeriondoxa"
+    "scheme": "xeriondoxa",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "fbf3f95f-64c5-4178-8b17-2293e1972e85"
+      }
+    },
+    "owner": "drloops"
   }
 }

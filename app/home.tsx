@@ -138,14 +138,14 @@ export default function HomeScreen() {
               <Text style={styles.sectionTitle}>About Us</Text>
             </View>
             <Text style={styles.sectionText}>
-              Xerion &amp; Doxa Chemist Limited is a leading healthcare company operating across multiple branches in Nigeria.
+              Xerion &amp; Doxa Chemist Limited is a leading healthcare company operating across multiple branches in Ghana.
               Founded on the values of integrity, compassion, and excellence, we deliver world-class pharmacy and laboratory services.
             </Text>
             <Text style={styles.sectionText}>
               Our dedicated team of pharmacists and lab scientists work around the clock to ensure every patient receives personalised, accurate, and affordable care.
             </Text>
             <View style={styles.statRow}>
-              {[['10+', 'Branches'], ['50K+', 'Patients'], ['15+', 'Years'], ['24/7', 'Support']].map(([num, label]) => (
+              {[['7+', 'Branches'], ['20K+', 'Patients'], ['4+', 'Years'], ['24/7', 'Support']].map(([num, label]) => (
                 <View key={label} style={styles.stat}>
                   <Text style={styles.statNum}>{num}</Text>
                   <Text style={styles.statLabel}>{label}</Text>

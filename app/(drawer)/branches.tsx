@@ -38,7 +38,7 @@ export default function BranchesScreen() {
               <Ionicons name="medical" size={24} color="#10b981" />
             </View>
             <View style={styles.badge}>
-              <Text style={styles.badgeText}>6 Locations</Text>
+              <Text style={styles.badgeText}>7 Locations</Text>
             </View>
           </View>
           

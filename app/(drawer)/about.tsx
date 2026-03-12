@@ -47,17 +47,17 @@ export default function AboutScreen() {
         {/* Stats Row */}
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>10+</Text>
+            <Text style={styles.statNumber}>4+</Text>
             <Text style={styles.statLabel}>Years</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>6</Text>
+            <Text style={styles.statNumber}>7+</Text>
             <Text style={styles.statLabel}>Branches</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>50k+</Text>
+            <Text style={styles.statNumber}>20k+</Text>
             <Text style={styles.statLabel}>Patients</Text>
           </View>
         </View>

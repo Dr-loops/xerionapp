@@ -123,6 +123,14 @@ export default function DrawerLayout() {
         name="laboratory" 
         options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} 
       />
+      <Drawer.Screen 
+        name="profile" 
+        options={{ 
+          title: 'My Profile',
+          drawerLabel: 'Profile',
+          drawerIcon: ({ color }: { color: string }) => <Ionicons name="person-outline" size={22} color={color} />
+        }} 
+      />
     </Drawer>
   );
 }

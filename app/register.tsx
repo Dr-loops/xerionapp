@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const { width } = Dimensions.get('window');
 
 export default function RegisterScreen() {
@@ -13,6 +15,33 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async () => {
+    if (!firstName || !lastName || !email || !password) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const userData = {
+        firstName,
+        lastName,
+        phone,
+        email,
+        password,
+      };
+      
+      await AsyncStorage.setItem('user_profile', JSON.stringify(userData));
+      router.replace('/(drawer)');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('Failed to create account. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -134,16 +163,17 @@ export default function RegisterScreen() {
             <TouchableOpacity 
               style={styles.primaryButton}
               activeOpacity={0.9}
-              onPress={() => router.replace('/(drawer)')}
+              onPress={handleRegister}
+              disabled={loading}
             >
               <LinearGradient
-                colors={['#0ea5e9', '#0284c7']}
+                colors={loading ? ['#94a3b8', '#64748b'] : ['#0ea5e9', '#0284c7']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.buttonGradient}
               >
-                <Text style={styles.primaryButtonText}>Create Account</Text>
-                <Ionicons name="checkmark-circle" size={20} color="#ffffff" style={{marginLeft: 8}} />
+                <Text style={styles.primaryButtonText}>{loading ? 'Creating...' : 'Create Account'}</Text>
+                {!loading && <Ionicons name="checkmark-circle" size={20} color="#ffffff" style={{marginLeft: 8}} />}
               </LinearGradient>
             </TouchableOpacity>
 

@@ -4,12 +4,13 @@ import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export const BRANCHES = [
-  { id: '1', name: 'Downtown Main', location: '123 Main St, Cityville', phone: '+1 555-0101', status: 'Open Now' },
-  { id: '2', name: 'Westside Clinic', location: '456 West Ave, Cityville', phone: '+1 555-0102', status: 'Open Now' },
-  { id: '3', name: 'East End Pharmacy', location: '789 East Blvd, Townsville', phone: '+1 555-0103', status: 'Closed' },
-  { id: '4', name: 'North Park Branch', location: '101 North Park, Metropolis', phone: '+1 555-0104', status: 'Open Now' },
-  { id: '5', name: 'Southgate Health', location: '202 Southgate Rd, Metropolis', phone: '+1 555-0105', status: 'Open Now' },
-  { id: '6', name: 'Central Plaza', location: '303 Central Plaza, Cityville', phone: '+1 555-0106', status: 'Open 24/7' },
+  { id: '1', name: 'XERION CHEMIST', location: 'GURUGU, GOIL FILLING STATION, JISONAYILI JUNCTION', phone: '0596455844', status: 'Open Now' },
+  { id: '2', name: 'XERION CHEMIST', location: 'SAWLA', phone: '05390011725', status: 'Open Now' },
+  { id: '3', name: 'DOXA CHEMIST', location: 'DABOKPA, OPPOSITE GHANASCO', phone: '0596821559', status: 'Open Now' },
+  { id: '4', name: 'DOXA CHEMIST (ANNEX)', location: 'GURUGU, KPALU JUNCTION', phone: '059825588', status: 'Open Now' },
+  { id: '5', name: 'XERION CHEMIST (ANNEX)', location: 'YONG', phone: '0240697362', status: 'Open Now' },
+  { id: '6', name: 'XERION CHEMIST', location: 'STADIUM, SAGNARIGU ROAD', phone: '259674227', status: 'Open Now' },
+  { id: '7', name: 'XERION CHEMIST (WHOLESALE)', location: 'TARGET', phone: '0547454731', status: 'Open Now' },
 ];
 
 export default function PharmacyDashboard() {

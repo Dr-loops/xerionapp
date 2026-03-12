@@ -1,11 +1,36 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Dimensions } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useState, useCallback } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
 export default function HomeDashboard() {
+  const [userName, setUserName] = useState('User');
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [])
+  );
+
+  const loadProfile = async () => {
+    try {
+      const data = await AsyncStorage.getItem('user_profile');
+      if (data) {
+        const user = JSON.parse(data);
+        setUserName(`${user.firstName} ${user.lastName}`);
+      } else {
+        setUserName('User');
+      }
+    } catch (e) {
+      console.error('Failed to load profile');
+      setUserName('User');
+    }
+  };
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Brand Header */}
@@ -16,14 +41,17 @@ export default function HomeDashboard() {
         <View style={styles.headerTop}>
           <View>
             <Text style={styles.greeting}>Good Morning,</Text>
-            <Text style={styles.name}>John Doe</Text>
+            <Text style={styles.name}>{userName}</Text>
           </View>
-          <View style={styles.avatarContainer}>
+          <TouchableOpacity 
+            style={styles.avatarContainer}
+            onPress={() => router.push('/(drawer)/profile')}
+          >
             <Image 
-              source={{ uri: 'https://ui-avatars.com/api/?name=John+Doe&background=f97316&color=fff&size=128' }} 
+              source={{ uri: `https://ui-avatars.com/api/?name=${userName.replace(' ', '+')}&background=f97316&color=fff&size=128` }} 
               style={styles.avatar} 
             />
-          </View>
+          </TouchableOpacity>
         </View>
 
         {/* App Brand in header */}
