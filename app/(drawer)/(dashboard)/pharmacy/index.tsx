@@ -36,7 +36,7 @@ export default function PharmacyDashboard() {
           <View style={styles.bannerIconContainer}>
             <Ionicons name="medical" size={32} color="#10b981" />
           </View>
-          <Text style={styles.bannerTitle}>Your Health, Our Priority</Text>
+          <Text style={styles.bannerTitle}>PANACEA OF HEALTH</Text>
           <Text style={styles.bannerDesc}>Select a branch below to view specific services, wait times, and availability.</Text>
         </LinearGradient>
       </View>
