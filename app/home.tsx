@@ -12,7 +12,7 @@ import {
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const { width } = Dimensions.get('window');
 
@@ -71,6 +71,96 @@ const DRUGS = [
     dosage: 'As per body weight, over 3 days. Follow prescriber instructions.',
     warning: 'Not for prevention. Complete full course even if feeling better.',
   },
+  {
+    name: 'Ciprofloxacin',
+    icon: 'shield-outline' as const,
+    color: '#2563eb',
+    use: 'Bacterial Infections',
+    desc: 'A fluoroquinolone antibiotic used to treat various bacterial infections like UTIs and pneumonia.',
+    dosage: '250–750mg every 12 hours depending on infection type.',
+    warning: 'May cause tendon issues. Avoid dairy/antacids during intake.',
+  },
+  {
+    name: 'Loratadine',
+    icon: 'leaf-outline' as const,
+    color: '#10b981',
+    use: 'Allergy Relief',
+    desc: 'A non-drowsy antihistamine used for hay fever, hives, and allergy symptoms.',
+    dosage: '10mg once daily.',
+    warning: 'Consult doctor if you have liver or kidney disease.',
+  },
+  {
+    name: 'Ibuprofen',
+    icon: 'thermometer-outline' as const,
+    color: '#ef4444',
+    use: 'Pain & Inflammation',
+    desc: 'An NSAID used to reduce pain, fever, and inflammation (e.g., arthritis, menstrual cramps).',
+    dosage: '200–400mg every 4–6 hours. Max 1200mg/day (OTC).',
+    warning: 'Take with food. Not recommended for those with stomach ulcers or asthma.',
+  },
+  {
+    name: 'Atorvastatin',
+    icon: 'bandage-outline' as const,
+    color: '#4f46e5',
+    use: 'Cholesterol Control',
+    desc: 'Used to lower "bad" cholesterol and fats while raising "good" cholesterol.',
+    dosage: '10–80mg once daily at any time of day.',
+    warning: 'Avoid grapefruit juice. Report unusual muscle pain immediately.',
+  },
+  {
+    name: 'Salbutamol',
+    icon: 'bicycle-outline' as const,
+    color: '#06b6d4',
+    use: 'Asthma / COPD Relief',
+    desc: 'A bronchodilator that opens up airways for easier breathing during asthma attacks.',
+    dosage: '1–2 puffs every 4–6 hours as needed for wheezing.',
+    warning: 'Use a spacer if directed. Seek emergency care if symptoms persist.',
+  },
+  {
+    name: 'Albendazole',
+    icon: 'fitness-outline' as const,
+    color: '#8b5cf6',
+    use: 'Deworming',
+    desc: 'Used to treat infections caused by various parasitic worms.',
+    dosage: 'Single 400mg dose for common worms; repeat in 2 weeks.',
+    warning: 'Do not use during pregnancy. Consult your doctor.',
+  },
+  {
+    name: 'Zinc Sulfate',
+    icon: 'sunny-outline' as const,
+    color: '#f59e0b',
+    use: 'Immune Support',
+    desc: 'Essential mineral for immune function and diarrhea management in children.',
+    dosage: 'Adults: 10–20mg daily. Children (diarrhea): 20mg for 10–14 days.',
+    warning: 'Do not take on an empty stomach to avoid nausea.',
+  },
+  {
+    name: 'Folic Acid',
+    icon: 'woman-outline' as const,
+    color: '#ec4899',
+    use: 'Blood Health & Pregnancy',
+    desc: 'A B-vitamin used to treat anemia and prevent birth defects in pregnancy.',
+    dosage: '400mcg – 5mg daily depending on need.',
+    warning: 'Best taken before and during early pregnancy.',
+  },
+  {
+    name: 'Glibenclamide',
+    icon: 'flask-outline' as const,
+    color: '#22c55e',
+    use: 'Diabetes (Type 2)',
+    desc: 'Helps the pancreas produce more insulin to lower blood sugar.',
+    dosage: '2.5–5mg once daily with breakfast.',
+    warning: 'Risk of hypoglycemia (low blood sugar). Eat regularly.',
+  },
+  {
+    name: 'Diclofenac',
+    icon: 'repeat-outline' as const,
+    color: '#dc2626',
+    use: 'Severe Pain / Arthritis',
+    desc: 'A potent NSAID for treating severe bone/joint pain and inflammation.',
+    dosage: '50mg 2–3 times daily after food.',
+    warning: 'May increase cardiovascular risk. Use lowest effective dose.',
+  },
 ];
 
 type Section = 'about' | 'services' | 'help' | null;
@@ -78,6 +168,25 @@ type Section = 'about' | 'services' | 'help' | null;
 export default function HomeScreen() {
   const [expanded, setExpanded] = useState<Section>(null);
   const [expandedDrug, setExpandedDrug] = useState<number | null>(null);
+  const [visibleDrugs, setVisibleDrugs] = useState<typeof DRUGS>([]);
+
+  useEffect(() => {
+    // Initial shuffle
+    shuffleDrugs();
+
+    // Set interval for 4 minutes (240,000 ms)
+    const interval = setInterval(() => {
+      shuffleDrugs();
+    }, 240000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const shuffleDrugs = () => {
+    // Pick 5 random unique drugs from the pool
+    const shuffled = [...DRUGS].sort(() => 0.5 - Math.random());
+    setVisibleDrugs(shuffled.slice(0, 5));
+  };
 
   const toggle = (section: Section) =>
     setExpanded(expanded === section ? null : section);
@@ -232,48 +341,51 @@ export default function HomeScreen() {
             <Text style={styles.sectionTitle}>Drug Education</Text>
           </View>
           <Text style={styles.eduSubtitle}>
-            Learn about commonly used medications — how they work, correct dosage, and safety tips.
+            Learn about commonly used medications — how they work, correct dosage, and safety tips. Featured meds update every 4 mins.
           </Text>
 
-          {DRUGS.map((drug, i) => (
-            <TouchableOpacity
-              key={drug.name}
-              style={styles.drugCard}
-              activeOpacity={0.88}
-              onPress={() => setExpandedDrug(expandedDrug === 100 + i ? null : 100 + i)}
-            >
-              <View style={styles.drugHeader}>
-                <View style={[styles.drugIcon, { backgroundColor: drug.color + '20' }]}>
-                  <Ionicons name={drug.icon} size={26} color={drug.color} />
-                </View>
-                <View style={styles.drugInfo}>
-                  <Text style={styles.drugName}>{drug.name}</Text>
-                  <View style={[styles.drugBadge, { backgroundColor: drug.color + '18' }]}>
-                    <Text style={[styles.drugUse, { color: drug.color }]}>{drug.use}</Text>
+          {visibleDrugs.map((drug, i) => {
+            const originalIndex = DRUGS.findIndex(d => d.name === drug.name);
+            return (
+              <TouchableOpacity
+                key={drug.name}
+                style={styles.drugCard}
+                activeOpacity={0.88}
+                onPress={() => setExpandedDrug(expandedDrug === 100 + originalIndex ? null : 100 + originalIndex)}
+              >
+                <View style={styles.drugHeader}>
+                  <View style={[styles.drugIcon, { backgroundColor: drug.color + '20' }]}>
+                    <Ionicons name={drug.icon as any} size={26} color={drug.color} />
                   </View>
+                  <View style={styles.drugInfo}>
+                    <Text style={styles.drugName}>{drug.name}</Text>
+                    <View style={[styles.drugBadge, { backgroundColor: drug.color + '18' }]}>
+                      <Text style={[styles.drugUse, { color: drug.color }]}>{drug.use}</Text>
+                    </View>
+                  </View>
+                  <Ionicons
+                    name={expandedDrug === 100 + originalIndex ? 'chevron-up' : 'chevron-down'}
+                    size={20}
+                    color="#94a3b8"
+                  />
                 </View>
-                <Ionicons
-                  name={expandedDrug === 100 + i ? 'chevron-up' : 'chevron-down'}
-                  size={20}
-                  color="#94a3b8"
-                />
-              </View>
 
-              {expandedDrug === 100 + i && (
-                <View style={styles.drugBody}>
-                  <Text style={styles.drugDesc}>{drug.desc}</Text>
-                  <View style={styles.drugDetail}>
-                    <Ionicons name="clipboard-outline" size={16} color="#1a6b2f" />
-                    <Text style={styles.drugDetailText}><Text style={styles.drugDetailLabel}>Dosage: </Text>{drug.dosage}</Text>
+                {expandedDrug === 100 + originalIndex && (
+                  <View style={styles.drugBody}>
+                    <Text style={styles.drugDesc}>{drug.desc}</Text>
+                    <View style={styles.drugDetail}>
+                      <Ionicons name="clipboard-outline" size={16} color="#1a6b2f" />
+                      <Text style={styles.drugDetailText}><Text style={styles.drugDetailLabel}>Dosage: </Text>{drug.dosage}</Text>
+                    </View>
+                    <View style={[styles.drugDetail, styles.warningRow]}>
+                      <Ionicons name="warning-outline" size={16} color="#f97316" />
+                      <Text style={styles.drugDetailText}><Text style={[styles.drugDetailLabel, { color: '#f97316' }]}>Warning: </Text>{drug.warning}</Text>
+                    </View>
                   </View>
-                  <View style={[styles.drugDetail, styles.warningRow]}>
-                    <Ionicons name="warning-outline" size={16} color="#f97316" />
-                    <Text style={styles.drugDetailText}><Text style={[styles.drugDetailLabel, { color: '#f97316' }]}>Warning: </Text>{drug.warning}</Text>
-                  </View>
-                </View>
-              )}
-            </TouchableOpacity>
-          ))}
+                )}
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         {/* ── SIGN IN / SIGN UP CTA ── */}
