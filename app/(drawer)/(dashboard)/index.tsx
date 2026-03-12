@@ -45,7 +45,7 @@ export default function HomeDashboard() {
           </View>
           <TouchableOpacity 
             style={styles.avatarContainer}
-            onPress={() => router.push('/(drawer)/profile')}
+            onPress={() => router.push('/profile')}
           >
             <Image 
               source={{ uri: `https://ui-avatars.com/api/?name=${userName.replace(' ', '+')}&background=f97316&color=fff&size=128` }} 
@@ -67,12 +67,12 @@ export default function HomeDashboard() {
             <Text style={styles.quickActionText}>Scan</Text>
           </TouchableOpacity>
           <View style={styles.divider} />
-          <TouchableOpacity style={styles.quickAction} onPress={() => router.push('/(drawer)/branches')}>
+          <TouchableOpacity style={styles.quickAction} onPress={() => router.push('/branches')}>
             <Ionicons name="location-outline" size={24} color="#f97316" />
             <Text style={styles.quickActionText}>Locate</Text>
           </TouchableOpacity>
           <View style={styles.divider} />
-          <TouchableOpacity style={styles.quickAction} onPress={() => router.push('/(drawer)/help')}>
+          <TouchableOpacity style={styles.quickAction} onPress={() => router.push('/help')}>
             <Ionicons name="chatbubble-ellipses-outline" size={24} color="#f97316" />
             <Text style={styles.quickActionText}>Support</Text>
           </TouchableOpacity>
@@ -84,7 +84,7 @@ export default function HomeDashboard() {
       <View style={styles.cardsContainer}>
         <TouchableOpacity 
           activeOpacity={0.9}
-          onPress={() => router.push('/(drawer)/pharmacy')}
+          onPress={() => router.push('/pharmacy')}
         >
           <LinearGradient
             colors={['#1a6b2f', '#2d8c49']}
@@ -107,7 +107,7 @@ export default function HomeDashboard() {
 
         <TouchableOpacity 
           activeOpacity={0.9}
-          onPress={() => router.push('/(drawer)/laboratory')}
+          onPress={() => router.push('/laboratory')}
         >
           <LinearGradient
             colors={['#f97316', '#ea580c']}
@@ -135,7 +135,7 @@ export default function HomeDashboard() {
           <Text style={styles.infoTitle}>Xerion & Doxa Promise</Text>
         </View>
         <Text style={styles.infoText}>We are committed to providing the best healthcare, pharmacy, and laboratory services across all our state-of-the-art branches.</Text>
-        <TouchableOpacity style={styles.outlineButton} onPress={() => router.push('/(drawer)/about')}>
+        <TouchableOpacity style={styles.outlineButton} onPress={() => router.push('/about')}>
           <Text style={styles.outlineButtonText}>Learn More About Us</Text>
         </TouchableOpacity>
       </View>

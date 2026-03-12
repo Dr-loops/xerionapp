@@ -18,7 +18,7 @@ export default function PharmacyDashboard() {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <TouchableOpacity 
-          onPress={() => router.canGoBack() ? router.back() : router.replace('/(drawer)/(dashboard)' as any)} 
+          onPress={() => router.canGoBack() ? router.back() : router.replace('/')} 
           style={styles.backButton}
         >
           <Ionicons name="arrow-back" size={24} color="#0f172a" />
@@ -51,7 +51,7 @@ export default function PharmacyDashboard() {
               key={branch.id} 
               style={styles.branchCard}
               activeOpacity={0.9}
-              onPress={() => router.push(`/(drawer)/pharmacy/branch/${branch.id}` as any)}
+              onPress={() => router.push(`/pharmacy/branch/${branch.id}`)}
             >
               <View style={styles.cardHeader}>
                 <Text style={styles.branchName}>{branch.name}</Text>

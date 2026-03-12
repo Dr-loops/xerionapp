@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert, Modal, TextInput, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,8 +6,9 @@ import { BRANCHES } from '../index'; // Import main branches list
 
 export default function BranchDashboard() {
   const { id } = useLocalSearchParams();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [orderText, setOrderText] = useState('');
+  const [activeModal, setActiveModal] = useState<'order' | 'consult' | null>(null);
+  const [inputText, setInputText] = useState('');
+  const inputRef = useRef<TextInput>(null);
 
   const branch = BRANCHES.find(b => b.id === id) || { 
     name: 'Unknown Branch', 
@@ -25,44 +26,38 @@ export default function BranchDashboard() {
     { title: 'Prescriptions', value: 'Ready', label: 'Processing online', icon: 'receipt', color: '#10b981' },
   ] as const;
 
-  const handleOrder = () => {
-    setModalVisible(true);
+  const openModal = (type: 'order' | 'consult') => {
+    setActiveModal(type);
+    setInputText('');
+    // Focus the input after a short delay to allow modal animation
+    setTimeout(() => inputRef.current?.focus(), 100);
   };
 
-  const confirmOrder = () => {
-    if (!orderText.trim()) {
-      Alert.alert('Message', 'Please type the name of the drugs you want to order.');
+  const handleConfirm = () => {
+    if (!inputText.trim()) {
+      Alert.alert('Message', `Please type your ${activeModal === 'order' ? 'drug list' : 'health concern'}.`);
       return;
     }
 
-    const message = `*DRUG ORDER REQUEST*\n\nBranch: ${branch.name}\n\nDrugs Needed:\n${orderText}\n\n_Please confirm availability and total cost._`;
-    const url = `whatsapp://send?phone=${branch.phone.replace(/[^0-9]/g, '')}&text=${encodeURIComponent(message)}`;
-    
-    Linking.canOpenURL(url).then(supported => {
-      if (supported) {
-        Linking.openURL(url);
-      } else {
-        const fallbackUrl = `https://wa.me/${branch.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
-        Linking.openURL(fallbackUrl);
-      }
-      setModalVisible(false);
-      setOrderText('');
-    }).catch(() => {
-      Alert.alert('Error', 'WhatsApp is not installed on your device');
-    });
-  };
+    let message = '';
+    if (activeModal === 'order') {
+      message = `*DRUG ORDER REQUEST*\n\nBranch: ${branch.name}\n\nDrugs Needed:\n${inputText}\n\n_Please confirm availability and total cost._`;
+    } else {
+      message = `*HEALTH CONSULTATION*\n\nBranch: ${branch.name} Pharmacist\n\nPatient Complaint:\n${inputText}\n\n_Kindly provide professional advice regarding the above._`;
+    }
 
-  const handleConsult = () => {
-    const template = `Hello ${branch.name} Pharmacist,\n\nI have the following health concerns:\n- Symptoms: \n- Duration: \n- Existing Conditions: \n\nKindly provide professional advice.`;
-    const url = `whatsapp://send?phone=${branch.phone.replace(/[^0-9]/g, '')}&text=${encodeURIComponent(template)}`;
+    const phone = branch.phone.replace(/[^0-9]/g, '');
+    const url = `whatsapp://send?phone=${phone}&text=${encodeURIComponent(message)}`;
     
     Linking.canOpenURL(url).then(supported => {
       if (supported) {
         Linking.openURL(url);
       } else {
-        const fallbackUrl = `https://wa.me/${branch.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(template)}`;
+        const fallbackUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
         Linking.openURL(fallbackUrl);
       }
+      setActiveModal(null);
+      setInputText('');
     }).catch(() => {
       Alert.alert('Error', 'WhatsApp is not installed on your device');
     });
@@ -73,59 +68,81 @@ export default function BranchDashboard() {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        visible={!!activeModal}
+        onRequestClose={() => setActiveModal(null)}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.modalOverlay}>
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={() => setActiveModal(null)}
+        >
+          <TouchableWithoutFeedback>
             <KeyboardAvoidingView 
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
               style={styles.modalContent}
             >
               <View style={styles.modalHeader}>
-                <View style={styles.modalIconBg}>
-                  <Ionicons name="cart-outline" size={24} color="#16a34a" />
+                <View style={[styles.modalIconBg, { backgroundColor: activeModal === 'order' ? '#f0fdf4' : '#eff6ff' }]}>
+                  <Ionicons 
+                    name={activeModal === 'order' ? "cart-outline" : "medical-outline"} 
+                    size={24} 
+                    color={activeModal === 'order' ? "#16a34a" : "#2563eb"} 
+                  />
                 </View>
                 <View style={{flex: 1}}>
-                  <Text style={styles.modalTitle}>Order Drugs</Text>
+                  <Text style={styles.modalTitle}>
+                    {activeModal === 'order' ? 'Order Drugs' : 'Health Consult'}
+                  </Text>
                   <Text style={styles.modalSubtitle}>{branch.name}</Text>
                 </View>
-                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeBtn}>
+                <TouchableOpacity onPress={() => setActiveModal(null)} style={styles.closeBtn}>
                   <Ionicons name="close" size={24} color="#64748b" />
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.inputLabel}>What drugs do you need?</Text>
+              <Text style={styles.inputLabel}>
+                {activeModal === 'order' ? 'What drugs do you need?' : 'Describe your health symptoms:'}
+              </Text>
+              
               <TextInput
+                ref={inputRef}
                 style={styles.textInput}
-                placeholder="e.g. Paracetamol 500mg (2 blisters), Amoxicillin..."
+                placeholder={activeModal === 'order' 
+                  ? "e.g. Paracetamol 500mg (2 blisters), Amoxicillin..." 
+                  : "e.g. Severe headache for 2 days, accompanied by slight fever..."
+                }
                 placeholderTextColor="#94a3b8"
                 multiline
                 numberOfLines={4}
-                value={orderText}
-                onChangeText={setOrderText}
+                value={inputText}
+                onChangeText={setInputText}
                 textAlignVertical="top"
+                autoFocus={true}
               />
 
               <TouchableOpacity 
-                style={styles.sendOrderBtn} 
+                style={[styles.sendOrderBtn, { backgroundColor: activeModal === 'order' ? '#16a34a' : '#2563eb' }]} 
                 activeOpacity={0.9}
-                onPress={confirmOrder}
+                onPress={handleConfirm}
               >
                 <Ionicons name="logo-whatsapp" size={20} color="#ffffff" style={{marginRight: 8}} />
-                <Text style={styles.sendOrderText}>Send Order via WhatsApp</Text>
+                <Text style={styles.sendOrderText}>
+                  {activeModal === 'order' ? 'Send Order via WhatsApp' : 'Start Consultation'}
+                </Text>
               </TouchableOpacity>
               
-              <Text style={styles.modalFooterText}>The pharmacist will respond to your request immediately upon receiving your WhatsApp message.</Text>
+              <Text style={styles.modalFooterText}>
+                The branch pharmacist will respond to your {activeModal === 'order' ? 'order' : 'consultation'} immediately.
+              </Text>
             </KeyboardAvoidingView>
-          </View>
-        </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
       </Modal>
 
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <TouchableOpacity 
-            onPress={() => router.canGoBack() ? router.back() : router.replace('/(drawer)/(dashboard)/pharmacy' as any)} 
+            onPress={() => router.canGoBack() ? router.back() : router.replace('/pharmacy')} 
             style={styles.backButton}
           >
             <Ionicons name="arrow-back" size={24} color="#0f172a" />
@@ -171,16 +188,24 @@ export default function BranchDashboard() {
           <Text style={styles.sectionTitle}>Pharmacy Actions</Text>
           
           <View style={styles.actionGrid}>
-            <TouchableOpacity style={[styles.actionBtn, styles.orderBtn]} activeOpacity={0.8} onPress={handleOrder}>
+            <TouchableOpacity 
+              style={[styles.actionBtn, styles.orderBtn]} 
+              activeOpacity={0.8} 
+              onPress={() => openModal('order')}
+            >
               <View style={styles.btnIconBg}>
                 <Ionicons name="cart" size={24} color="#ffffff" />
               </View>
               <Text style={[styles.btnText, styles.orderBtnText]}>Order Drugs</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.actionBtn, styles.consultBtn]} activeOpacity={0.8} onPress={handleConsult}>
-              <View style={[styles.btnIconBg, { backgroundColor: '#16a34a' }]}>
-                <Ionicons name="logo-whatsapp" size={24} color="#ffffff" />
+            <TouchableOpacity 
+              style={[styles.actionBtn, styles.consultBtn]} 
+              activeOpacity={0.8} 
+              onPress={() => openModal('consult')}
+            >
+              <View style={[styles.btnIconBg, { backgroundColor: '#2563eb' }]}>
+                <Ionicons name="chatbubbles" size={24} color="#ffffff" />
               </View>
               <Text style={styles.btnText}>Health Consult</Text>
             </TouchableOpacity>
@@ -492,7 +517,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#f0fdf4',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -531,13 +555,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   sendOrderBtn: {
-    backgroundColor: '#16a34a',
     height: 60,
     borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#16a34a',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 16,

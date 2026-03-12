@@ -80,7 +80,7 @@ export default function SignInScreen() {
               <TouchableOpacity 
                 style={styles.primaryButton}
                 activeOpacity={0.9}
-                onPress={() => router.replace('/(drawer)')}
+                onPress={() => router.replace('/')}
               >
                 <LinearGradient
                   colors={['#1a6b2f', '#2d8c49']}
