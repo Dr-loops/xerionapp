@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -21,10 +22,12 @@ export const LAB_BRANCHES = [
 ];
 
 export default function LaboratoryDashboard() {
+  const [showPackages, setShowPackages] = useState(false);
+  
   const widgets = [
     { id: '1', title: 'Schedule Test', icon: 'calendar', color: '#8b5cf6', info: 'Book your home/lab visit' },
     { id: '2', title: 'Test Results', icon: 'document-text', color: '#10b981', info: 'View recent lab reports' },
-    { id: '3', title: 'Health Packages', icon: 'medkit', color: '#f43f5e', info: 'Checkup bundles & offers' },
+    { id: '3', title: 'Health Packages', icon: 'medkit', color: '#f43f5e', info: 'Checkup bundles & offers', action: () => setShowPackages(true) },
     { id: '4', title: 'Find a Lab', icon: 'location', color: '#0ea5e9', info: 'Locate nearest test center', route: '/laboratory/branch/1' },
   ] as const;
 
@@ -68,7 +71,10 @@ export default function LaboratoryDashboard() {
             <TouchableOpacity 
               style={styles.widgetCard} 
               activeOpacity={0.9}
-              onPress={() => (w as any).route && router.push((w as any).route)}
+              onPress={() => {
+                if ((w as any).action) (w as any).action();
+                else if ((w as any).route) router.push((w as any).route);
+              }}
             >
               <View style={[styles.iconContainer, { backgroundColor: w.color + '15' }]}>
                 <Ionicons name={w.icon as any} size={28} color={w.color} />
@@ -90,6 +96,88 @@ export default function LaboratoryDashboard() {
         </View>
       </View>
       
+      {/* Health Packages Modal */}
+      <Modal
+        visible={showPackages}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowPackages(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <View style={[styles.modalIconCircle, { backgroundColor: '#f43f5e15' }]}>
+                <Ionicons name="gift" size={28} color="#f43f5e" />
+              </View>
+              <View style={{ flex: 1, marginLeft: 16 }}>
+                <Text style={styles.modalTitle}>Health Packages</Text>
+                <Text style={styles.modalSub}>Exclusive Offers & Services</Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowPackages(false)}>
+                <Ionicons name="close-circle" size={32} color="#cbd5e1" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView contentContainerStyle={styles.modalScroll}>
+              {/* Discount Card */}
+              <View style={styles.promoCard}>
+                <LinearGradient
+                  colors={['#f43f5e', '#e11d48']}
+                  style={styles.promoGradient}
+                >
+                  <View style={styles.promoHeader}>
+                    <Text style={styles.promoTitle}>Special 5% Discount</Text>
+                    <Ionicons name="sparkles" size={20} color="#ffffff" />
+                  </View>
+                  <Text style={styles.promoText}>
+                    Patients who request for tests totaling more than 800 GHS will receive an instant 5% discount on their bill.
+                  </Text>
+                </LinearGradient>
+              </View>
+
+              <Text style={styles.sectionTitleSmall}>Additional Services</Text>
+
+              <View style={styles.serviceItem}>
+                <View style={[styles.serviceIcon, { backgroundColor: '#8b5cf615' }]}>
+                  <Ionicons name="chatbox-ellipses" size={20} color="#8b5cf6" />
+                </View>
+                <View style={styles.serviceTextContent}>
+                  <Text style={styles.serviceTitle}>Thorough Results Interpretation</Text>
+                  <Text style={styles.serviceInfo}>Direct walkthrough of your lab results with our lead scientists.</Text>
+                </View>
+              </View>
+
+              <View style={styles.serviceItem}>
+                <View style={[styles.serviceIcon, { backgroundColor: '#10b98115' }]}>
+                  <Ionicons name="headset" size={20} color="#10b981" />
+                </View>
+                <View style={styles.serviceTextContent}>
+                  <Text style={styles.serviceTitle}>Further Consultations</Text>
+                  <Text style={styles.serviceInfo}>Expert advice on next steps based on your diagnostic profile.</Text>
+                </View>
+              </View>
+
+              <View style={styles.serviceItem}>
+                <View style={[styles.serviceIcon, { backgroundColor: '#0ea5e915' }]}>
+                  <Ionicons name="add-circle" size={20} color="#0ea5e9" />
+                </View>
+                <View style={styles.serviceTextContent}>
+                  <Text style={styles.serviceTitle}>And More...</Text>
+                  <Text style={styles.serviceInfo}>Priority scheduling, family bundles, and periodic health screenings.</Text>
+                </View>
+              </View>
+            </ScrollView>
+
+            <TouchableOpacity 
+              style={styles.closeBtn}
+              onPress={() => setShowPackages(false)}
+            >
+              <Text style={styles.closeBtnText}>I Understand</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Bottom Padding */}
       <View style={{height: 40}} />
     </ScrollView>
@@ -269,5 +357,124 @@ const styles = StyleSheet.create({
     color: '#92400e', 
     lineHeight: 22,
     fontWeight: '500'
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.7)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    padding: 24,
+    maxHeight: '85%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  modalIconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#0f172a',
+    letterSpacing: -0.5,
+  },
+  modalSub: {
+    fontSize: 14,
+    color: '#64748b',
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  modalScroll: {
+    paddingBottom: 24,
+  },
+  promoCard: {
+    borderRadius: 24,
+    overflow: 'hidden',
+    marginBottom: 28,
+  },
+  promoGradient: {
+    padding: 24,
+  },
+  promoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  promoTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#ffffff',
+    letterSpacing: -0.5,
+  },
+  promoText: {
+    fontSize: 15,
+    color: 'rgba(255,255,255,0.9)',
+    lineHeight: 22,
+    fontWeight: '500',
+  },
+  sectionTitleSmall: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#0f172a',
+    marginBottom: 16,
+    letterSpacing: -0.5,
+  },
+  serviceItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    backgroundColor: '#f8fafc',
+    padding: 16,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  serviceIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  serviceTextContent: {
+    flex: 1,
+  },
+  serviceTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 2,
+  },
+  serviceInfo: {
+    fontSize: 13,
+    color: '#64748b',
+    lineHeight: 18,
+    fontWeight: '500',
+  },
+  closeBtn: {
+    backgroundColor: '#0f172a',
+    height: 56,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  closeBtnText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
   }
 });
