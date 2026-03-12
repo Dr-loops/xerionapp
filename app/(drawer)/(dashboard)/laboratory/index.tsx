@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Linking, Alert, TextInput, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -23,13 +23,53 @@ export const LAB_BRANCHES = [
 
 export default function LaboratoryDashboard() {
   const [showPackages, setShowPackages] = useState(false);
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [testsNeeded, setTestsNeeded] = useState('');
   
+  const next7Days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    return {
+      day: d.toLocaleDateString('en-US', { weekday: 'short' }),
+      date: d.getDate(),
+      month: d.toLocaleDateString('en-US', { month: 'short' }),
+      full: d.toDateString(),
+    };
+  });
+
+  const timeSlots = ['08:00 AM', '09:30 AM', '11:00 AM', '01:00 PM', '02:30 PM', '04:00 PM'];
+
   const widgets = [
-    { id: '1', title: 'Schedule Test', icon: 'calendar', color: '#8b5cf6', info: 'Book your home/lab visit' },
+    { id: '1', title: 'Schedule Test', icon: 'calendar', color: '#8b5cf6', info: 'Book your home/lab visit', action: () => setShowSchedule(true) },
     { id: '2', title: 'Test Results', icon: 'document-text', color: '#10b981', info: 'View recent lab reports' },
     { id: '3', title: 'Health Packages', icon: 'medkit', color: '#f43f5e', info: 'Checkup bundles & offers', action: () => setShowPackages(true) },
     { id: '4', title: 'Find a Lab', icon: 'location', color: '#0ea5e9', info: 'Locate nearest test center', route: '/laboratory/branch/1' },
   ] as const;
+
+  const handleBookTest = () => {
+    if (!selectedDate || !selectedTime || !testsNeeded.trim()) {
+      Alert.alert('Missing Information', 'Please select a date, time, and specify the tests you need.');
+      return;
+    }
+
+    const lab = LAB_BRANCHES[0];
+    const message = `Scheduled Test Booking:\nBranch: ${lab.name}\nTests: ${testsNeeded}\nDate: ${selectedDate}\nTime: ${selectedTime}`;
+    const url = `whatsapp://send?phone=${lab.whatsapp || lab.phone}&text=${encodeURIComponent(message)}`;
+
+    Linking.canOpenURL(url).then(supported => {
+      if (supported) {
+        Linking.openURL(url);
+        setShowSchedule(false);
+        setTestsNeeded('');
+        setSelectedDate(null);
+        setSelectedTime(null);
+      } else {
+        Alert.alert('WhatsApp Issue', 'Please ensure WhatsApp is installed on your device.');
+      }
+    });
+  };
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -176,6 +216,102 @@ export default function LaboratoryDashboard() {
             </TouchableOpacity>
           </View>
         </View>
+      </Modal>
+
+      {/* Schedule Test Modal */}
+      <Modal
+        visible={showSchedule}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowSchedule(false)}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContent, { maxHeight: '90%' }]}>
+              <View style={styles.modalHeader}>
+                <View style={[styles.modalIconCircle, { backgroundColor: '#8b5cf615' }]}>
+                  <Ionicons name="calendar" size={28} color="#8b5cf6" />
+                </View>
+                <View style={{ flex: 1, marginLeft: 16 }}>
+                  <Text style={styles.modalTitle}>Schedule a Test</Text>
+                  <Text style={styles.modalSub}>Select your preferred slot</Text>
+                </View>
+                <TouchableOpacity onPress={() => setShowSchedule(false)}>
+                  <Ionicons name="close-circle" size={32} color="#cbd5e1" />
+                </TouchableOpacity>
+              </View>
+
+              <KeyboardAvoidingView 
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+              >
+                <ScrollView contentContainerStyle={styles.modalScroll} showsVerticalScrollIndicator={false}>
+                  <Text style={styles.sectionTitleSmall}>Select Date</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateSelector}>
+                    {next7Days.map((d, i) => (
+                      <TouchableOpacity 
+                        key={i}
+                        style={[
+                          styles.dateCard,
+                          selectedDate === d.full && styles.dateCardActive
+                        ]}
+                        onPress={() => setSelectedDate(d.full)}
+                      >
+                        <Text style={[styles.dateDay, selectedDate === d.full && styles.dateTextActive]}>{d.day}</Text>
+                        <Text style={[styles.dateNum, selectedDate === d.full && styles.dateTextActive]}>{d.date}</Text>
+                        <Text style={[styles.dateMonth, selectedDate === d.full && styles.dateTextActive]}>{d.month}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+
+                  <Text style={[styles.sectionTitleSmall, { marginTop: 20 }]}>Select Time</Text>
+                  <View style={styles.timeGrid}>
+                    {timeSlots.map((t, i) => (
+                      <TouchableOpacity 
+                        key={i}
+                        style={[
+                          styles.timeChip,
+                          selectedTime === t && styles.timeChipActive
+                        ]}
+                        onPress={() => setSelectedTime(t)}
+                      >
+                        <Text style={[styles.timeText, selectedTime === t && styles.timeTextActive]}>{t}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  <Text style={[styles.sectionTitleSmall, { marginTop: 20 }]}>Tests Needed</Text>
+                  <View style={styles.inputWrapper}>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="List the tests or symptoms here..."
+                      placeholderTextColor="#94a3b8"
+                      multiline
+                      numberOfLines={4}
+                      value={testsNeeded}
+                      onChangeText={setTestsNeeded}
+                    />
+                  </View>
+                </ScrollView>
+
+                <TouchableOpacity 
+                  style={styles.bookBtn}
+                  onPress={handleBookTest}
+                >
+                  <LinearGradient
+                    colors={['#8b5cf6', '#7c3aed']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.bookGradient}
+                  >
+                    <Ionicons name="logo-whatsapp" size={20} color="#ffffff" />
+                    <Text style={styles.bookBtnText}>Confirm via WhatsApp</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </KeyboardAvoidingView>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
       {/* Bottom Padding */}
@@ -476,5 +612,86 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '700',
+  },
+  // Scheduling Styles
+  dateSelector: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  dateCard: {
+    width: 70,
+    height: 90,
+    backgroundColor: '#f8fafc',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  dateCardActive: {
+    backgroundColor: '#8b5cf6',
+    borderColor: '#7c3aed',
+    elevation: 4,
+    shadowColor: '#8b5cf6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  dateDay: { fontSize: 12, color: '#64748b', fontWeight: 'bold' },
+  dateNum: { fontSize: 20, color: '#0f172a', fontWeight: '900', marginVertical: 2 },
+  dateMonth: { fontSize: 11, color: '#94a3b8', fontWeight: '600' },
+  dateTextActive: { color: '#ffffff' },
+  timeGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  timeChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: '#f1f5f9',
+    borderRadius: 12,
+    minWidth: '30%',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  timeChipActive: {
+    backgroundColor: '#8b5cf615',
+    borderColor: '#8b5cf6',
+  },
+  timeText: { fontSize: 14, color: '#475569', fontWeight: '600' },
+  timeTextActive: { color: '#8b5cf6', fontWeight: '800' },
+  inputWrapper: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    minHeight: 100,
+  },
+  textInput: {
+    fontSize: 15,
+    color: '#0f172a',
+    textAlignVertical: 'top',
+  },
+  bookBtn: {
+    marginTop: 16,
+    height: 56,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  bookGradient: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  bookBtnText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '800',
   }
 });
